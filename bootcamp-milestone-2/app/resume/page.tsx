@@ -1,4 +1,20 @@
-export default function Resume() {
+import connectDB from "@/app/database/db";
+import Project from "@/app/database/projectSchema";
+
+async function getProjects() {
+  await connectDB();
+
+  try {
+    const projects = await Project.find().orFail();
+    return projects;
+  } catch (err) {
+    return [];
+  }
+}
+
+export default async function Resume() {
+  const projects = await getProjects();
+
   return (
     <>
       <main>
@@ -50,17 +66,21 @@ export default function Resume() {
 
           <section className="section">
             <h2 className="section-title">Projects</h2>
-            <div className="entry">
-              <h3 className="entry-title">Personal Website</h3>
-              <p className="entry-info">
-                Made a website using HTML and CSS
-                <p className="entry-description">
-                  {" "}
-                  - Used proper git procedures throughout the project build
-                  process
+            {projects.map((project, index) => (
+              <div className="entry" key={index}>
+                <h3 className="entry-title">{project.title}</h3>
+                <p className="entry-info">
+                  {project.description}
+                  {project.details.map(
+                    (detail: string, detailIndex: number) => (
+                      <p className="entry-description" key={detailIndex}>
+                        - {detail}
+                      </p>
+                    )
+                  )}
                 </p>
-              </p>
-            </div>
+              </div>
+            ))}
           </section>
         </div>
       </main>
