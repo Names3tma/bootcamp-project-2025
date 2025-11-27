@@ -3,6 +3,7 @@ import connectDB from "@/app/database/db";
 import Blog from "@/app/database/blogSchema";
 import Image from "next/image";
 import Link from "next/link";
+import Comment from "@/components/comment";
 
 type Props = {
   params: Promise<{ slug: string }>;
@@ -53,6 +54,11 @@ export default async function BlogPost({ params }: Props) {
                 (paragraph: string, index: number) =>
                   paragraph.trim() && <p key={index}>{paragraph}</p>
               )}
+          </div>
+          <div>
+            {blog.comments.map((comment: any, index: number) => (
+              <Comment key={index} comment={comment} />
+            ))}
           </div>
           <Link href="/blog" className="back-link">
             ← Back to Blog

@@ -1,5 +1,12 @@
 import mongoose, { Schema } from "mongoose";
 
+// TypeScript type for a single comment
+export type IComment = {
+  user: string;
+  comment: string;
+  time: Date;
+};
+
 // TypeScript type for the Blog
 export type Blog = {
   title: string;
@@ -9,6 +16,7 @@ export type Blog = {
   image: string;
   imageAlt: string;
   slug: string;
+  comments: IComment[];
 };
 
 // Mongoose schema for the Blog
@@ -20,6 +28,13 @@ const blogSchema = new Schema<Blog>({
   image: { type: String, required: true },
   imageAlt: { type: String, required: true },
   slug: { type: String, required: true },
+  comments: [
+    {
+      user: { type: String, required: true },
+      comment: { type: String, required: true },
+      time: { type: Date, required: true, default: new Date() },
+    },
+  ],
 });
 
 // Create and export the model
