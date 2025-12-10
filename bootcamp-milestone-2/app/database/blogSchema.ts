@@ -37,8 +37,6 @@ const blogSchema = new Schema<Blog>({
   ],
 });
 
-// Create and export the model
-// Check if model already exists to prevent recompilation errors
 const Blog = mongoose.models["blogs"] || mongoose.model("blogs", blogSchema);
 
 export default Blog;
