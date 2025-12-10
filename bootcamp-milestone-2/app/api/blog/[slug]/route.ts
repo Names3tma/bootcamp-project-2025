@@ -21,9 +21,9 @@ import Blog from "@/app/database/blogSchema";
    /api/blog/[slug]/route.ts creates { params: { slug: "actual-slug-value" } }
 */
 type IParams = {
-  params: {
+  params: Promise<{
     slug: string;
-  };
+  }>;
 };
 
 /*
@@ -42,12 +42,50 @@ export async function GET(req: NextRequest, { params }: IParams) {
   // If { params } looks confusing, check the note below this code block
 
   await connectDB(); // function from db.ts before
-  const { slug } = params; // another destructure
+  const { slug } = await params; // await params before destructuring
 
   try {
     const blog = await Blog.findOne({ slug }).orFail();
     return NextResponse.json(blog);
   } catch (err) {
     return NextResponse.json("Blog not found.", { status: 404 });
+  }
+}
+
+export async function POST(req: NextRequest, { params }: IParams) {
+  await connectDB();
+  const { slug } = await params; // await params before destructuring
+
+  try {
+    const body = await req.json();
+
+    // Validate the body
+    if (!body.user || !body.comment) {
+      return NextResponse.json(
+        { error: "User and comment are required" },
+        { status: 400 }
+      );
+    }
+
+    // Create comment object with current timestamp
+    const newComment = {
+      user: body.user,
+      comment: body.comment,
+      time: new Date(),
+    };
+
+    // Find blog and push the new comment to its comments array
+    const blog = await Blog.findOneAndUpdate(
+      { slug },
+      { $push: { comments: newComment } },
+      { new: true }
+    ).orFail();
+
+    return NextResponse.json(blog, { status: 201 });
+  } catch (err) {
+    return NextResponse.json(
+      { error: "Blog not found or failed to add comment" },
+      { status: 404 }
+    );
   }
 }

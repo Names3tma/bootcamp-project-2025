@@ -1,5 +1,6 @@
 import connectDB from "@/app/database/db";
 import Project from "@/app/database/projectSchema";
+import Link from "next/link";
 
 async function getProjects() {
   await connectDB();
@@ -39,10 +40,9 @@ export default async function Resume() {
               <h3 className="entry-title">Computer Science Tutor</h3>
               <p className="entry-info">
                 Ohlone College | August 2024- May 2025
-                <p className="entry-description">
-                  {" "}
-                  - Tutored students in all avaible courses at Ohlone College
-                </p>
+              </p>
+              <p className="entry-description">
+                - Tutored students in all avaible courses at Ohlone College
               </p>
             </div>
           </section>
@@ -68,7 +68,11 @@ export default async function Resume() {
             <h2 className="section-title">Projects</h2>
             {projects.map((project, index) => (
               <div className="entry" key={index}>
-                <h3 className="entry-title">{project.title}</h3>
+                <h3 className="entry-title">
+                  <Link href={`/portfolio/${project.slug}`}>
+                    {project.title}
+                  </Link>
+                </h3>
                 <p className="entry-info">
                   {project.description}
                   {project.details.map(
